@@ -1,0 +1,43 @@
+{
+    "name": "lucentcms/lucentcms",
+    "description": "PHP client for LucentCMS",
+    "keywords": [
+        "lucentcms",
+        "lucentcms"
+    ],
+    "homepage": "https://github.com/lucentcms/lucentcms",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Alexander Lingris",
+            "email": "hey@lucentcms.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lucentcms\\Lucentcms\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lucentcms\\Lucentcms\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
