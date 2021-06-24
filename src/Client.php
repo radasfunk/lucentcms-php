@@ -27,7 +27,6 @@ class Client
 
         $this->headers = [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
             'Lucent-Channel' => $this->channel,
             'Authorization' => 'Bearer ' . $this->token,
         ];
@@ -49,10 +48,12 @@ class Client
         ];
         if (in_array($method, ['POST', 'PUT', 'PATCH'])) {
             $payload['json'] = $data;
+            $payload['headers']['Content-Type'] = 'application/json';
         }
 
         if (in_array($method, ['GET', 'DELETE'])) {
             $payload['query'] = $data;
+            $payload['headers']['Content-Type'] = 'application/json';
         }
 
         if (in_array($method, ['UPLOAD'])) {
@@ -66,7 +67,7 @@ class Client
 
         $this->code = $response->getStatusCode();
         $this->body = $body;
-        if(isset($body['errors'])){
+        if (isset($body['errors'])) {
             $this->errors = $body['errors'];
         }
 
