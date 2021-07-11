@@ -8,7 +8,7 @@ PHP driver for Lucent CMS v3.
 You can install the package via composer:
 
 ```bash
-composer require lucentcms/lucentcms
+composer require radasfunk/lucentcms-php
 ```
 
 ## Usage

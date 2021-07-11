@@ -2,10 +2,9 @@
     "name": "radasfunk/lucentcms-php",
     "description": "PHP client for LucentCMS",
     "keywords": [
-        "lucentcms",
         "lucentcms"
     ],
-    "homepage": "git@github.com:radasfunk/lucentcms-php.git",
+    "homepage": "https://github.com/radasfunk/lucentcms-php",
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -16,8 +15,7 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
-        "guzzlehttp/guzzle": "^7.0"
+        "php": "^7.4|^8.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0"

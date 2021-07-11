@@ -1,16 +1,17 @@
 <?php
 
-namespace Lucentcms\Lucentcms;
+namespace Radasfunk\Lucentcms;
 
-use GuzzleHttp\Client as GuzzleClient;
+use Curl\Curl;
+use Radasfunk\Lucentcms\LucentcmsException;
 
 class Client
 {
-    const API_URL = "https://api.lucentcms.com/api/";
+    protected string $apiUrl;
+    protected $curl;
     protected string $channel;
     protected string $token;
     protected ?string $user = null;
-    protected $guzzle;
     protected $errors;
     protected $headers = [];
     protected $body;
@@ -19,11 +20,15 @@ class Client
     function __construct(
         $channel,
         $token,
-        $user = null
+        $user = null,
+        $apiUrl = "https://api.fastbreak.tech/api/"
     ) {
         $this->channel = $channel;
         $this->token = $token;
         $this->user = $user;
+        $this->apiUrl = $apiUrl;
+
+        $this->curl = new Curl($this->apiUrl);
 
         $this->headers = [
             'Accept' => 'application/json',
@@ -35,57 +40,38 @@ class Client
             $this->headers['Lucent-User'] = $this->user;
         }
 
-        $this->guzzle = new GuzzleClient([
-            'base_uri' => self::API_URL,
-            'http_errors' => false
-        ]);
+        $this->curl->setHeaders($this->headers);
+        
     }
 
-    public function baseRequest(string $method, string $endpoint, array $data = [])
+    public function baseRequest($method, $endpoint, $payload = [])
     {
-        $payload = [
-            'headers' => $this->headers
-        ];
-        if (in_array($method, ['POST', 'PUT', 'PATCH'])) {
-            $payload['json'] = $data;
-            $payload['headers']['Content-Type'] = 'application/json';
-        }
 
-        if (in_array($method, ['GET', 'DELETE'])) {
-            $payload['query'] = $data;
-            $payload['headers']['Content-Type'] = 'application/json';
-        }
+        $this->curl->{strtolower($method)}($endpoint, $payload);
 
-        if (in_array($method, ['UPLOAD'])) {
-            $payload['multipart'] = $data;
-            $method = 'POST';
-        }
+        $body = json_decode($this->curl->getRawResponse(), true);
 
-        $response = $this->guzzle->request($method, $endpoint, $payload);
-
-        $body = json_decode((string)$response->getBody(), true);
-
-        $this->code = $response->getStatusCode();
+        $this->code = $this->curl->getHttpStatusCode();
         $this->body = $body;
-        if (isset($body['errors'])) {
-            $this->errors = $body['errors'];
-        }
+        $this->errors = $this->body['errors'] ?? [];
 
-        // if ($this->hasErrors() && $this->withExceptions) {
-        //     $this->throwException();
-        // }
+        if ($this->hasErrors() && $this->withExceptions) {
+            $this->throwException();
+        }
 
         return $this;
     }
 
     public function get($endpoint, $params = [])
     {
+
         return  $this->baseRequest('GET', $endpoint, $params);
     }
 
 
     public function post($endpoint, $data = [])
     {
+
         return  $this->baseRequest('POST', $endpoint, $data);
     }
 
@@ -107,38 +93,27 @@ class Client
 
     public function upload($endpoint, $data = [])
     {
-        return  $this->baseRequest('UPLOAD', $endpoint, $data);
-    }
-
-    public function addHeader(string $key, string $value): self
-    {
-        $this->headers[$key] = $value;
-        return $this;
+        return  $this->baseRequest('POST', $endpoint, $data);
     }
 
     public function data()
     {
-        return $this->body['data'];
+        return $this->body['data'] ?? [];
     }
 
     public function included()
     {
-        return $this->body['included'];
+        return $this->body['included'] ?? [];
     }
 
-    public function first()
+    public function meta()
     {
-        return $this->body['data'][0] ?? null;
+        return $this->body['meta'] ?? [];
     }
 
     public function body()
     {
         return $this->body;
-    }
-
-    public function code()
-    {
-        return $this->code;
     }
 
     public function hasErrors()
@@ -150,14 +125,20 @@ class Client
         return $this->errors;
     }
 
-    // public function throwException()
-    // {
-    //     new (400, $this->error());
-    // }
 
-    // public function withExceptions()
-    // {
-    //     $this->withExceptions = true;
-    //     return $this;
-    // }
+    public function error()
+    {
+        return $this->error[0] ?? null;
+    }
+
+    public function throwException()
+    {
+        throw new LucentcmsException($this->error());
+    }
+
+    public function withExceptions()
+    {
+        $this->withExceptions = true;
+        return $this;
+    }
 }
