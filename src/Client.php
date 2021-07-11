@@ -21,7 +21,7 @@ class Client
         $channel,
         $token,
         $user = null,
-        $apiUrl = "https://api.fastbreak.tech/api/"
+        $apiUrl = "https://api.lucentcms.com/api/"
     ) {
         $this->channel = $channel;
         $this->token = $token;
