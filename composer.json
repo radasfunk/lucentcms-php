@@ -1,11 +1,11 @@
 {
-    "name": "lucentcms/lucentcms",
+    "name": "radasfunk/lucentcms-php",
     "description": "PHP client for LucentCMS",
     "keywords": [
         "lucentcms",
         "lucentcms"
     ],
-    "homepage": "https://github.com/lucentcms/lucentcms",
+    "homepage": "git@github.com:radasfunk/lucentcms-php.git",
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -24,12 +24,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Lucentcms\\Lucentcms\\": "src"
+            "Radasfunk\\Lucentcms\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Lucentcms\\Lucentcms\\Tests\\": "tests"
+            "Radasfunk\\Lucentcms\\Tests\\": "tests"
         }
     },
     "scripts": {

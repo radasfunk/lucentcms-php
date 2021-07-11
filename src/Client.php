@@ -136,6 +136,11 @@ class Client
         return $this->body;
     }
 
+    public function code()
+    {
+        return $this->code;
+    }
+
     public function hasErrors()
     {
         return !empty($this->errors);
