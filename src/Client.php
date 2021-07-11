@@ -8,7 +8,7 @@ use Radasfunk\Lucentcms\LucentcmsException;
 class Client
 {
     protected string $apiUrl;
-    protected $curl;
+    public $curl;
     protected string $channel;
     protected string $token;
     protected ?string $user = null;
