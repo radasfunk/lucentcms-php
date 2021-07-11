@@ -15,7 +15,8 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0"
+        "php": "^7.4|^8.0",
+        "php-curl-class/php-curl-class": "^9.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0"
