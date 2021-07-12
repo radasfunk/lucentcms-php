@@ -1,7 +1,4 @@
-# Very short description of the package
-
 PHP driver for Lucent CMS v3.
-
 
 ## Installation
 

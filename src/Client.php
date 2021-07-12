@@ -7,7 +7,7 @@ use GuzzleHttp\Client as GuzzleClient;
 class Client
 {
     protected $apiUrl;
-    protected string $channel;
+    protected ?string $channel;
     protected string $token;
     protected ?string $user = null;
     protected $guzzle;
