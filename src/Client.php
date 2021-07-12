@@ -2,16 +2,15 @@
 
 namespace Radasfunk\Lucentcms;
 
-use Curl\Curl;
-use Radasfunk\Lucentcms\LucentcmsException;
+use GuzzleHttp\Client as GuzzleClient;
 
 class Client
 {
-    protected string $apiUrl;
-    public $curl;
+    protected $apiUrl;
     protected string $channel;
     protected string $token;
     protected ?string $user = null;
+    protected $guzzle;
     protected $errors;
     protected $headers = [];
     protected $body;
@@ -21,14 +20,12 @@ class Client
         $channel,
         $token,
         $user = null,
-        $apiUrl = "https://api.lucentcms.com/api/"
+        $apiUrl =  "https://api.lucentcms.com/api/"
     ) {
         $this->channel = $channel;
         $this->token = $token;
         $this->user = $user;
         $this->apiUrl = $apiUrl;
-
-        $this->curl = new Curl($this->apiUrl);
 
         $this->headers = [
             'Accept' => 'application/json',
@@ -40,20 +37,41 @@ class Client
             $this->headers['Lucent-User'] = $this->user;
         }
 
-        $this->curl->setHeaders($this->headers);
-        
+        $this->guzzle = new GuzzleClient([
+            'base_uri' => $this->apiUrl,
+            'http_errors' => false
+        ]);
     }
 
-    public function baseRequest($method, $endpoint, $payload = [])
+    public function baseRequest(string $method, string $endpoint, array $data = [])
     {
+        $payload = [
+            'headers' => $this->headers
+        ];
+        if (in_array($method, ['POST', 'PUT', 'PATCH'])) {
+            $payload['json'] = $data;
+            $payload['headers']['Content-Type'] = 'application/json';
+        }
 
-        $this->curl->{strtolower($method)}($endpoint, $payload);
+        if (in_array($method, ['GET', 'DELETE'])) {
+            $payload['query'] = $data;
+            $payload['headers']['Content-Type'] = 'application/json';
+        }
 
-        $body = json_decode($this->curl->getRawResponse(), true);
+        if (in_array($method, ['UPLOAD'])) {
+            $payload['multipart'] = $data;
+            $method = 'POST';
+        }
 
-        $this->code = $this->curl->getHttpStatusCode();
+        $response = $this->guzzle->request($method, $endpoint, $payload);
+
+        $body = json_decode((string)$response->getBody(), true);
+
+        $this->code = $response->getStatusCode();
         $this->body = $body;
-        $this->errors = $this->body['errors'] ?? [];
+        if (isset($body['errors'])) {
+            $this->errors = $body['errors'];
+        }
 
         if ($this->hasErrors() && $this->withExceptions) {
             $this->throwException();
@@ -64,14 +82,12 @@ class Client
 
     public function get($endpoint, $params = [])
     {
-
         return  $this->baseRequest('GET', $endpoint, $params);
     }
 
 
     public function post($endpoint, $data = [])
     {
-
         return  $this->baseRequest('POST', $endpoint, $data);
     }
 
@@ -93,7 +109,13 @@ class Client
 
     public function upload($endpoint, $data = [])
     {
-        return  $this->baseRequest('POST', $endpoint, $data);
+        return  $this->baseRequest('UPLOAD', $endpoint, $data);
+    }
+
+    public function addHeader(string $key, string $value): self
+    {
+        $this->headers[$key] = $value;
+        return $this;
     }
 
     public function data()
