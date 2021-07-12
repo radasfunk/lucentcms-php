@@ -16,7 +16,7 @@ composer require radasfunk/lucentcms-php
 ```php
 $lucent = new Client(
     {{channelID}},
-    {{apiKey}}'),
+    {{apiKey}}),
 );
 
 // Optionally you can set the locale
