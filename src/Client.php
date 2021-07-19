@@ -150,7 +150,7 @@ class Client
 
     public function error()
     {
-        return $this->error[0] ?? null;
+        return $this->errors[0] ?? null;
     }
 
     public function throwException()
